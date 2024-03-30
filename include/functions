@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# set -eE
-# trap 'exit' ERR
-trap 'tput cnorm' EXIT
+set -eE
+trap 'exit' ERR
+trap 'tput cnorm; __error_handling__' EXIT
 
+current_pkg_name=
 error="${HOME}/error.log"
 
-# __error_handling__() {
-#   whiptail --title '❗ Oops ❗' --scrolltext --textbox "${error}" 9 60
-# }
+__error_handling__() {
+  whiptail --title "❗ $current_pkg_name ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+}
 
 #-------------------------------------------------------------------
 # Display the final message or the error log given the user's choice
@@ -77,14 +78,13 @@ install_standard() {
   fi
 
   log_separator "$1"
+  current_pkg_name="$2"
 
+  # Installation
   sudo apt-get install "$1" -qq > /dev/null 2>> "${error}" &
+  infobox_spinner $! "$2" "Installing"
 
-  if infobox_spinner $! "$2" "Installing"; then
-    whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
-  else
-    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
-  fi
+  whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
 }
 
 #-------------------------------------------------------------------
@@ -107,30 +107,19 @@ install_PPA() {
   fi
 
   log_separator "$1"
+  current_pkg_name="$2"
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
-
-  if ! infobox_spinner $! "$2" "Setting PPA"; then
-    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
-    return
-  fi
+  infobox_spinner $! "$2" "Setting PPA"
 
   # Update
-  sudo apt-get update -qq 2>> "${error}" &
-
-  if ! infobox_spinner $! "$2" "Updating packages"; then
-    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
-    return
-  fi
+  sudo apt-get update -qq > /dev/null 2>> "${error}" &
+  infobox_spinner $! "$2" "Updating packages"
 
   # Installation
-  sudo apt-get install "$1" -qq &
-
-  if ! infobox_spinner $! "$2" "Installing $1"; then
-    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
-    return
-  fi
+  sudo apt-get install "$1" -qq > /dev/null 2>> "${error}" &
+  infobox_spinner $! "$2" "Installing $1"
 
   whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
 }
