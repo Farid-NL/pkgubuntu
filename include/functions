@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -eE
-trap 'exit' ERR
-trap 'tput cnorm; __error_handling__' EXIT
+trap '__error_handling__; exit' ERR
+trap 'tput cnorm; cd "${init_dir}"' EXIT
 
 current_pkg_name=
+init_dir="${PWD}"
 error="${HOME}/error.log"
 
 __error_handling__() {
