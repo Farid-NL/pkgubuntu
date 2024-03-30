@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# set -eE
+# trap 'exit' ERR
+trap 'tput cnorm' EXIT
+
+error="${HOME}/error.log"
+
+# __error_handling__() {
+#   whiptail --title '❗ Oops ❗' --scrolltext --textbox "${error}" 9 60
+# }
+
+#-------------------------------------------------------------------
+# Display the final message or the error log given the user's choice
+#-------------------------------------------------------------------
+# @arg $1 Message
+#-------------------------------------------------------------------
+final_message() {
+
+  if (whiptail --title "Goodbye!" --scrolltext --yesno "$1" --yes-button "Show error log" \
+      --no-button "Exit" --defaultno 15 80)
+  then
+    whiptail --title "Error log file" --scrolltext --textbox "${error}" 15 80
+  fi
+}
+
+#-------------------------------------------------------------------
+# Append a separator in the error log with the name of the package
+#-------------------------------------------------------------------
+# @arg $1 Name of the package
+# @arg $2 Target file
+#-------------------------------------------------------------------
+log_separator() {
+  echo -e "---------------$1---------------" >> "${error}"
+}
+
+#-------------------------------------------------------------------
+# Display infobox with a spinner showing that a process is running
+#-------------------------------------------------------------------
+# @arg $1 Command to be executed
+# @arg $2 Title of the infobox
+# @arg $3 Message of the infobox
+#-------------------------------------------------------------------
+infobox_spinner() {
+  local frames=('▰ ▱ ▱ ▱ ▱' '▱ ▰ ▱ ▱ ▱' '▱ ▱ ▰ ▱ ▱' '▱ ▱ ▱ ▰ ▱' '▱ ▱ ▱ ▱ ▰')
+
+  tput civis # cursor invisible
+
+  local pid=$1
+
+  while kill -0 "${pid}" 2&> /dev/null; do
+    local i=$(( (i + 1) % ${#frames[@]} ))
+    TERM=ansi; whiptail --title "🔨 $2 🔨" --infobox "$3\n${frames[$i]}" 9 60; TERM=xterm-256color
+    sleep 0.1
+  done
+
+  tput cnorm # cursor back to normal
+  wait "${pid}" # capture exit code
+  return $?
+}
+
+#-------------------------------------------------------------------
+# Install package from default repository
+#-------------------------------------------------------------------
+# @arg $1 Name of the package
+# @arg $2 Human-readable name of the package
+# @arg $3 Installed?
+#
+# @example
+#   install_standard "yakuake" "Yakuake" "${is_installed_yakuake}"
+#-------------------------------------------------------------------
+install_standard() {
+  if $3; then return; fi
+
+  if (! whiptail --title "🚀 $2 🚀" --yesno "Do you want to install '$2'?" --defaultno 9 60); then
+    whiptail --title "❌ $2 ❌" --msgbox "Installation canceled" 9 60
+    return
+  fi
+
+  log_separator "$1"
+
+  sudo apt-get install "$1" -qq > /dev/null 2>> "${error}" &
+
+  if infobox_spinner $! "$2" "Installing"; then
+    whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
+  else
+    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+  fi
+}
+
+#-------------------------------------------------------------------
+# Install package from PPA
+#-------------------------------------------------------------------
+# @arg $1 Name of the package
+# @arg $2 Human-readable name of the package
+# @arg $3 PPA
+# @arg $4 Installed?
+#
+# @example
+#     install_PPA "git" "git" "ppa:git-core/ppa" "${is_installed_git}"
+#-------------------------------------------------------------------
+install_PPA() {
+  if $4; then return; fi
+
+  if (! whiptail --title "🚀 $2 🚀" --yesno "Do you want to install '$2'?" --defaultno 9 60); then
+    whiptail --title "❌ $2 ❌" --msgbox "Installation canceled" 9 60
+    return
+  fi
+
+  log_separator "$1"
+
+  # PPA set up
+  sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
+
+  if ! infobox_spinner $! "$2" "Setting PPA"; then
+    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+    return
+  fi
+
+  # Update
+  sudo apt-get update -qq 2>> "${error}" &
+
+  if ! infobox_spinner $! "$2" "Updating packages"; then
+    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+    return
+  fi
+
+  # Installation
+  sudo apt-get install "$1" -qq &
+
+  if ! infobox_spinner $! "$2" "Installing $1"; then
+    whiptail --title "❗ $2 ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+    return
+  fi
+
+  whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
+}
