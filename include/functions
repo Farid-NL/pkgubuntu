@@ -62,64 +62,64 @@ infobox_spinner() {
 #-------------------------------------------------------------------
 # Install package from default repository
 #-------------------------------------------------------------------
-# @arg $1 Name of the package
-# @arg $2 Human-readable name of the package
+# @arg $1 Human-readable name of the package
+# @arg $2 Name of the package
 # @arg $3 Installed?
 #
 # @example
-#   install_standard "yakuake" "Yakuake" "${is_installed_yakuake}"
+#   install_standard "Yakuake" "yakuake" "${is_installed_yakuake}"
 #-------------------------------------------------------------------
 install_standard() {
   if $3; then return; fi
 
-  if (! whiptail --title "🚀 $2 🚀" --yesno "Do you want to install '$2'?" --defaultno 9 60); then
-    whiptail --title "❌ $2 ❌" --msgbox "Installation canceled" 9 60
+  if (! whiptail --title "🚀 $1 🚀" --yesno "Do you want to install '$1'?" --defaultno 9 60); then
+    whiptail --title "❌ $1 ❌" --msgbox "Installation canceled" 9 60
     return
   fi
 
   log_separator "$1"
-  current_pkg_name="$2"
+  current_pkg_name="$1"
 
   # Installation
-  sudo apt-get install "$1" -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$2" "Installing"
+  sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
+  infobox_spinner $! "$1" "Installing"
 
-  whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
+  whiptail --title "✅ $1 ✅" --msgbox "Installation completed" 9 60
 }
 
 #-------------------------------------------------------------------
 # Install package from PPA
 #-------------------------------------------------------------------
-# @arg $1 Name of the package
-# @arg $2 Human-readable name of the package
+# @arg $1 Human-readable name of the package
+# @arg $2 Name of the package
 # @arg $3 PPA
 # @arg $4 Installed?
 #
 # @example
-#     install_PPA "git" "git" "ppa:git-core/ppa" "${is_installed_git}"
+#   install_PPA "git" "git" "ppa:git-core/ppa" "${is_installed_git}"
 #-------------------------------------------------------------------
 install_PPA() {
   if $4; then return; fi
 
-  if (! whiptail --title "🚀 $2 🚀" --yesno "Do you want to install '$2'?" --defaultno 9 60); then
-    whiptail --title "❌ $2 ❌" --msgbox "Installation canceled" 9 60
+  if (! whiptail --title "🚀 $1 🚀" --yesno "Do you want to install '$1'?" --defaultno 9 60); then
+    whiptail --title "❌ $1 ❌" --msgbox "Installation canceled" 9 60
     return
   fi
 
   log_separator "$1"
-  current_pkg_name="$2"
+  current_pkg_name="$1"
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$2" "Setting PPA"
+  infobox_spinner $! "$1" "Setting PPA"
 
   # Update
   sudo apt-get update -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$2" "Updating packages"
+  infobox_spinner $! "$1" "Updating packages"
 
   # Installation
-  sudo apt-get install "$1" -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$2" "Installing $1"
+  sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
+  infobox_spinner $! "$1" "Installing $2"
 
-  whiptail --title "✅ $2 ✅" --msgbox "Installation completed" 9 60
+  whiptail --title "✅ $1 ✅" --msgbox "Installation completed" 9 60
 }
