@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+
 set -eE
 trap '__error_handling__; exit' ERR
 trap 'tput cnorm; cd "${init_dir}"' EXIT
 
+# Utilities
 current_pkg_name=
 init_dir="${PWD}"
 error="${HOME}/error.log"
@@ -159,4 +161,84 @@ install_deb() {
   rm /tmp/package.deb
 
   whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
+}
+
+#-------------------------------------------------------------------
+# Check if a package is installed
+#-------------------------------------------------------------------
+# @arg $1 Package name
+#
+# @example
+#   check_package curl
+#-------------------------------------------------------------------
+check_package() {
+  if ! dpkg --get-selections | grep -wq "$1"; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if file exists
+#-------------------------------------------------------------------
+# @arg $1 File path
+#
+# @example
+#   check_file "${HOME}/path/to/file.txt"
+#-------------------------------------------------------------------
+check_file() {
+  if [ ! -f "$1" ]; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if directory exists
+#-------------------------------------------------------------------
+# @arg $1 Directory path
+#
+# @example
+#   check_directory "${HOME}/path/to/directory"
+#-------------------------------------------------------------------
+check_directory() {
+  if [ ! -d "$1" ]; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if command exists
+#-------------------------------------------------------------------
+# @arg $1 Name of command
+#
+# @example
+#   check_command anki
+#-------------------------------------------------------------------
+check_command() {
+  if ! command -v "$1" > /dev/null; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if font exists
+#-------------------------------------------------------------------
+# @arg $1 Name of font
+#
+# @example
+#   check_font 'JetBrains Mono'
+#-------------------------------------------------------------------
+check_font() {
+  if ! fc-list | grep -q "$1"; then
+    echo false
+  else
+    echo true
+  fi
 }
