@@ -7,7 +7,7 @@ current_pkg_name=
 error="${HOME}/error.log"
 
 __error_handling__() {
-  whiptail --title "❗ $current_pkg_name ❗" --msgbox "Installation failed\n\nCheck the error.log" 9 60
+  whiptail --title "❗ $current_pkg_name ❗" --msgbox 'Installation failed\n\nCheck the error.log' 9 60
 }
 
 #-------------------------------------------------------------------
@@ -17,10 +17,10 @@ __error_handling__() {
 #-------------------------------------------------------------------
 final_message() {
 
-  if (whiptail --title "Goodbye!" --scrolltext --yesno "$1" --yes-button "Show error log" \
-      --no-button "Exit" --defaultno 15 80)
+  if (whiptail --title 'Goodbye!' --scrolltext --yesno "$1" --yes-button 'Show error log' \
+      --no-button 'Exit' --defaultno 15 80)
   then
-    whiptail --title "Error log file" --scrolltext --textbox "${error}" 15 80
+    whiptail --title 'Error log file' --scrolltext --textbox "${error}" 15 80
   fi
 }
 
@@ -73,7 +73,7 @@ install_standard() {
   if $3; then return; fi
 
   if (! whiptail --title "🚀 $1 🚀" --yesno "Do you want to install '$1'?" --defaultno 9 60); then
-    whiptail --title "❌ $1 ❌" --msgbox "Installation canceled" 9 60
+    whiptail --title "❌ $1 ❌" --msgbox 'Installation canceled' 9 60
     return
   fi
 
@@ -82,9 +82,9 @@ install_standard() {
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" "Installing"
+  infobox_spinner $! "$1" 'Installing'
 
-  whiptail --title "✅ $1 ✅" --msgbox "Installation completed" 9 60
+  whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
 }
 
 #-------------------------------------------------------------------
@@ -102,7 +102,7 @@ install_PPA() {
   if $4; then return; fi
 
   if (! whiptail --title "🚀 $1 🚀" --yesno "Do you want to install '$1'?" --defaultno 9 60); then
-    whiptail --title "❌ $1 ❌" --msgbox "Installation canceled" 9 60
+    whiptail --title "❌ $1 ❌" --msgbox 'Installation canceled' 9 60
     return
   fi
 
@@ -111,15 +111,15 @@ install_PPA() {
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" "Setting PPA"
+  infobox_spinner $! "$1" 'Setting PPA'
 
   # Update
   sudo apt-get update -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" "Updating packages"
+  infobox_spinner $! "$1" 'Updating packages'
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
   infobox_spinner $! "$1" "Installing $2"
 
-  whiptail --title "✅ $1 ✅" --msgbox "Installation completed" 9 60
+  whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
 }
