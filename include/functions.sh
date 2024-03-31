@@ -22,6 +22,16 @@ __error_handler__() {
 }
 
 #-------------------------------------------------------------------
+# Reset everything as it was before runnig the script
+#-------------------------------------------------------------------
+__cleanup__() {
+  tput cnorm
+  rm -f /tmp/package.deb
+  # shellcheck disable=SC2154
+  cd "${init_dir}" || return
+}
+
+#-------------------------------------------------------------------
 # Display the final message or the error log given the user's choice
 #-------------------------------------------------------------------
 # @arg $1 Message
