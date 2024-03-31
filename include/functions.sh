@@ -88,7 +88,7 @@ infobox_spinner() {
 # @arg $3 Installed?
 #
 # @example
-#   install_standard "Yakuake" "yakuake" "${is_installed_yakuake}"
+#   install_standard "Yakuake" "yakuake" "${is_installed[yakuake]}"
 #-------------------------------------------------------------------
 install_standard() {
   if $3; then return; fi
@@ -118,7 +118,7 @@ install_standard() {
 # @arg $4 Installed?
 #
 # @example
-#   install_PPA "git" "git" "ppa:git-core/ppa" "${is_installed_git}"
+#   install_PPA "git" "git" "ppa:git-core/ppa" "${is_installed[git]}"
 #-------------------------------------------------------------------
 install_PPA() {
   if $4; then return; fi
@@ -159,8 +159,8 @@ install_PPA() {
 # @arg $3 Installed?
 #
 # @example
-#   install_deb "Chrome" "${chrome_url}" "${is_installed_chrome}"
-#   install_deb "VSCode" "${code_url}" "${is_installed_code}"
+#   install_deb "Chrome" "${chrome_url}" "${is_installed[google-chrome]}"
+#   install_deb "VSCode" "${code_url}" "${is_installed[code]}"
 #-------------------------------------------------------------------
 install_deb() {
   if $3; then return; fi
