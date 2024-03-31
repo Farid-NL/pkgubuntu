@@ -1,17 +1,7 @@
 #!/usr/bin/env bash
 
-set -eEo pipefail
-trap '__error_handling__; exit' ERR
-trap 'tput cnorm; cd "${init_dir}"' EXIT
-
 # Utilities
-current_pkg_name=
-init_dir="${PWD}"
 error="${HOME}/error.log"
-
-__error_handling__() {
-  whiptail --title "❗ $current_pkg_name ❗" --msgbox 'Installation failed\n\nCheck the error.log' 9 60
-}
 
 #-------------------------------------------------------------------
 # Display the final message or the error log given the user's choice
@@ -81,7 +71,6 @@ install_standard() {
   fi
 
   log_separator "$1"
-  current_pkg_name="$1"
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
@@ -110,7 +99,6 @@ install_PPA() {
   fi
 
   log_separator "$1"
-  current_pkg_name="$1"
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
@@ -147,7 +135,6 @@ install_deb() {
   fi
 
   log_separator "$1"
-  current_pkg_name="$1"
 
   # Download
   curl -fsSL "$2" -o /tmp/package.deb 2>> "${error}" &

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+#-------------------------------------------------------------------
+# Script options and handlers
+#-------------------------------------------------------------------
+set -eE
+trap '__error_handling__; exit' ERR
+trap 'tput cnorm; cd "${init_dir}"' EXIT
+
+__error_handling__() {
+  whiptail --title "❗ Oops ❗" --msgbox 'Something went wrong\n\nCheck the error.log' 9 60
+}
+
+#-------------------------------------------------------------------
+# Variable and functions
+#-------------------------------------------------------------------
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+init_dir="${PWD}"
+
+source "${script_dir}/include/functions.sh"
+source "${script_dir}/include/software.sh"
+
+final_msj="Check possible errors in '${error}'
+
+  • Check how to install 'zsh'
+    https://bit.ly/3Tz6zLO
+
+  • Look for desktop files & KDE settings
+    https://github.com/Farid-NL/dotfiles
+
+  • You could need the thunderbird-menu-fix
+    libdbusmenu-glib4 (Install)
+
+  • Custom Grub themes
+    https://github.com/vinceliuice/grub2-themes"
+
+#-------------------------------------------------------------------
+# Execution
+#-------------------------------------------------------------------
+
+# Check if it's run as root
+if [[ "${EUID}" = 0 ]]; then
+  echo "It is not recommended (nor necessary) to run this script as root."
+  exit 1
+fi
+
+# Write the root password once
+sudo echo ""
+
+# New date for log
+if [ ! -f "${error}" ]; then
+  echo -e "+++++++++++++++ $(date +'%x %X') +++++++++++++++" >> "${error}"
+else
+  echo -e "\n+++++++++++++++ $(date +'%x %X') +++++++++++++++" >> "${error}"
+fi
+
+# Set software's installation statuses
+check_software
+
+# Display software's statuses
+if ! pre_installation; then
+  final_message "${final_msj}"
+  exit
+fi
+
+installation
+
+final_message "${final_msj}"
