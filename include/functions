@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eE
+set -eEo pipefail
 trap '__error_handling__; exit' ERR
 trap 'tput cnorm; cd "${init_dir}"' EXIT
 
