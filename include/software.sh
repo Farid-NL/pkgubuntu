@@ -74,7 +74,7 @@ installation() {
   install_standard "gromit-mpx" "Gromit MPX (Draw on screen)" "${is_installed[gromit-mpx]}"
 
   # screenkey
-  install_screenkey "screenkey" "screenkey" "${is_installed[screenkey]}"
+  install_standard "screenkey" "screenkey" "${is_installed[screenkey]}"
 
   # XAMPP
   msg="Manual installation required:\n\nVisit: https://sourceforge.net/projects/xampp/files/latest/download"
