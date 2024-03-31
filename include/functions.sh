@@ -4,14 +4,32 @@
 error="${HOME}/error.log"
 
 #-------------------------------------------------------------------
+# Error handler
+#-------------------------------------------------------------------
+# @arg $1 Title of the box (context of the error)
+# @arg $2 Message
+#-------------------------------------------------------------------
+__error_handler__() {
+  local msg="${2:-Something failed!}\n\nCheck error log"
+
+  if (whiptail --title "❗ $1 ❗" --yesno "${msg}" --yes-button 'Show error log' \
+      --no-button 'Exit' --defaultno 9 60)
+  then
+    whiptail --title 'Error log file' --scrolltext --textbox "${error}" 15 80
+  fi
+
+  exit 1
+}
+
+#-------------------------------------------------------------------
 # Display the final message or the error log given the user's choice
 #-------------------------------------------------------------------
 # @arg $1 Message
 #-------------------------------------------------------------------
 final_message() {
 
-  if (whiptail --title 'Goodbye!' --scrolltext --yesno "$1" --yes-button 'Show error log' \
-      --no-button 'Exit' --defaultno 15 80)
+  if (whiptail --title 'Goodbye!' --yesno "$1" --yes-button 'Show error log' \
+      --no-button 'Exit' --defaultno --scrolltext 15 80)
   then
     whiptail --title 'Error log file' --scrolltext --textbox "${error}" 15 80
   fi
@@ -74,7 +92,9 @@ install_standard() {
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" 'Installing'
+  if ! infobox_spinner $! "$1" 'Installing'; then
+    __error_handler__ "$1" 'Installation failure!'
+  fi
 
   whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
 }
@@ -102,15 +122,21 @@ install_PPA() {
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" 'Setting PPA'
+  if ! infobox_spinner $! "$1" 'Setting PPA'; then
+    __error_handler__ "$1" 'PPA configuration failure!'
+  fi
 
   # Update
   sudo apt-get update -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" 'Updating packages'
+  if ! infobox_spinner $! "$1" 'Updating packages'; then
+    __error_handler__ "$1" 'Update failure!'
+  fi
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" "Installing $2"
+  if ! infobox_spinner $! "$1" "Installing $2"; then
+    __error_handler__ "$1" 'Installation failure!'
+  fi
 
   whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
 }
@@ -138,11 +164,15 @@ install_deb() {
 
   # Download
   curl -fsSL "$2" -o /tmp/package.deb 2>> "${error}" &
-  infobox_spinner $! "$1" 'Downloading'
+  if ! infobox_spinner $! "$1" 'Downloading'; then
+    __error_handler__ "$1" 'Download (DEB) failure!'
+  fi
 
   # Installation
   sudo apt-get install /tmp/package.deb -qq > /dev/null 2>> "${error}" &
-  infobox_spinner $! "$1" 'Installing'
+  if ! infobox_spinner $! "$1" 'Installing'; then
+    __error_handler__ "$1" 'Installation failure!'
+  fi
 
   # Cleanup
   rm /tmp/package.deb

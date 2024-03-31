@@ -3,13 +3,7 @@
 #-------------------------------------------------------------------
 # Script options and handlers
 #-------------------------------------------------------------------
-set -eE
-trap '__error_handling__; exit' ERR
 trap 'tput cnorm; cd "${init_dir}"' EXIT
-
-__error_handling__() {
-  whiptail --title "❗ Oops ❗" --msgbox 'Something went wrong\n\nCheck the error.log' 9 60
-}
 
 #-------------------------------------------------------------------
 # Variable and functions
