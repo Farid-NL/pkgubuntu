@@ -51,7 +51,7 @@ final_message() {
 # @arg $1 Name of the package
 # @arg $2 Target file
 #-------------------------------------------------------------------
-log_separator() {
+__log_separator__() {
   echo -e "---------------$1---------------" >> "${error}"
 }
 
@@ -62,7 +62,7 @@ log_separator() {
 # @arg $2 Title of the infobox
 # @arg $3 Message of the infobox
 #-------------------------------------------------------------------
-infobox_spinner() {
+__infobox_spinner__() {
   local frames=('▰ ▱ ▱ ▱ ▱' '▱ ▰ ▱ ▱ ▱' '▱ ▱ ▰ ▱ ▱' '▱ ▱ ▱ ▰ ▱' '▱ ▱ ▱ ▱ ▰')
 
   tput civis # cursor invisible
@@ -98,11 +98,11 @@ install_standard() {
     return
   fi
 
-  log_separator "$1"
+  __log_separator__ "$1"
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
-  if ! infobox_spinner $! "$1" 'Installing'; then
+  if ! __infobox_spinner__ $! "$1" 'Installing'; then
     __error_handler__ "$1" 'Installation failure!'
   fi
 
@@ -128,23 +128,23 @@ install_PPA() {
     return
   fi
 
-  log_separator "$1"
+  __log_separator__ "$1"
 
   # PPA set up
   sudo add-apt-repository -y "$3" > /dev/null 2>> "${error}" &
-  if ! infobox_spinner $! "$1" 'Setting PPA'; then
+  if ! __infobox_spinner__ $! "$1" 'Setting PPA'; then
     __error_handler__ "$1" 'PPA configuration failure!'
   fi
 
   # Update
   sudo apt-get update -qq > /dev/null 2>> "${error}" &
-  if ! infobox_spinner $! "$1" 'Updating packages'; then
+  if ! __infobox_spinner__ $! "$1" 'Updating packages'; then
     __error_handler__ "$1" 'Update failure!'
   fi
 
   # Installation
   sudo apt-get install "$2" -qq > /dev/null 2>> "${error}" &
-  if ! infobox_spinner $! "$1" "Installing $2"; then
+  if ! __infobox_spinner__ $! "$1" "Installing $2"; then
     __error_handler__ "$1" 'Installation failure!'
   fi
 
@@ -170,17 +170,17 @@ install_deb() {
     return
   fi
 
-  log_separator "$1"
+  __log_separator__ "$1"
 
   # Download
   curl -fsSL "$2" -o /tmp/package.deb 2>> "${error}" &
-  if ! infobox_spinner $! "$1" 'Downloading'; then
+  if ! __infobox_spinner__ $! "$1" 'Downloading'; then
     __error_handler__ "$1" 'Download (DEB) failure!'
   fi
 
   # Installation
   sudo apt-get install /tmp/package.deb -qq > /dev/null 2>> "${error}" &
-  if ! infobox_spinner $! "$1" 'Installing'; then
+  if ! __infobox_spinner__ $! "$1" 'Installing'; then
     __error_handler__ "$1" 'Installation failure!'
   fi
 
