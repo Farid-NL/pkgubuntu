@@ -242,3 +242,25 @@ check_font() {
     echo true
   fi
 }
+
+#-------------------------------------------------------------------
+# Helper that display a prompt about a required manual installation
+#-------------------------------------------------------------------
+# @arg $1 Name of package
+# @arg $2 Message
+# @arg $3 Installed?
+# @arg $4 Scrollable?
+#
+# @example
+#     show_manual_install "nvm" "${is_installed_nvm}" "${msg}"
+#     show_manual_install "MySQL" "${is_installed_mysql}" "${msg}" true
+#-------------------------------------------------------------------
+show_manual_install(){
+  if $3; then return; fi
+
+  if [ -z "$4" ]; then
+    whiptail --title "🔨 $1 🔨" --msgbox "$2" 11 60
+  else
+    whiptail --title "🔨 $1 🔨" --scrolltext --msgbox "$2" 11 60
+  fi
+}
