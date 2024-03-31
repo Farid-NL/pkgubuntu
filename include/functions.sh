@@ -255,22 +255,6 @@ check_command() {
 }
 
 #-------------------------------------------------------------------
-# Check if font exists
-#-------------------------------------------------------------------
-# @arg $1 Name of font
-#
-# @example
-#   check_font 'JetBrains Mono'
-#-------------------------------------------------------------------
-check_font() {
-  if ! fc-list | grep -q "$1"; then
-    echo false
-  else
-    echo true
-  fi
-}
-
-#-------------------------------------------------------------------
 # Helper that display a prompt about a required manual installation
 #-------------------------------------------------------------------
 # @arg $1 Name of package
