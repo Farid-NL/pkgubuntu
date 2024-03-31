@@ -32,20 +32,6 @@ __cleanup__() {
 }
 
 #-------------------------------------------------------------------
-# Display the final message or the error log given the user's choice
-#-------------------------------------------------------------------
-# @arg $1 Message
-#-------------------------------------------------------------------
-final_message() {
-
-  if (whiptail --title 'Goodbye!' --yesno "$1" --yes-button 'Show error log' \
-      --no-button 'Exit' --defaultno --scrolltext 15 80)
-  then
-    whiptail --title 'Error log file' --scrolltext --textbox "${error}" 15 80
-  fi
-}
-
-#-------------------------------------------------------------------
 # Append a separator in the error log with the name of the package
 #-------------------------------------------------------------------
 # @arg $1 Name of the package
@@ -78,6 +64,84 @@ __infobox_spinner__() {
   tput cnorm # cursor back to normal
   wait "${pid}" # capture exit code
   return $?
+}
+
+#-------------------------------------------------------------------
+# Display the final message or the error log given the user's choice
+#-------------------------------------------------------------------
+# @arg $1 Message
+#-------------------------------------------------------------------
+final_message() {
+
+  if (whiptail --title 'Goodbye!' --yesno "$1" --yes-button 'Show error log' \
+      --no-button 'Exit' --defaultno --scrolltext 15 80)
+  then
+    whiptail --title 'Error log file' --scrolltext --textbox "${error}" 15 80
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if a package is installed
+#-------------------------------------------------------------------
+# @arg $1 Package name
+#
+# @example
+#   check_package curl
+#-------------------------------------------------------------------
+check_package() {
+  if ! dpkg --get-selections | grep -wq "$1"; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if file exists
+#-------------------------------------------------------------------
+# @arg $1 File path
+#
+# @example
+#   check_file "${HOME}/path/to/file.txt"
+#-------------------------------------------------------------------
+check_file() {
+  if [ ! -f "$1" ]; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if directory exists
+#-------------------------------------------------------------------
+# @arg $1 Directory path
+#
+# @example
+#   check_directory "${HOME}/path/to/directory"
+#-------------------------------------------------------------------
+check_directory() {
+  if [ ! -d "$1" ]; then
+    echo false
+  else
+    echo true
+  fi
+}
+
+#-------------------------------------------------------------------
+# Check if command exists
+#-------------------------------------------------------------------
+# @arg $1 Name of command
+#
+# @example
+#   check_command anki
+#-------------------------------------------------------------------
+check_command() {
+  if ! command -v "$1" > /dev/null; then
+    echo false
+  else
+    echo true
+  fi
 }
 
 #-------------------------------------------------------------------
@@ -188,70 +252,6 @@ install_deb() {
   rm /tmp/package.deb
 
   whiptail --title "✅ $1 ✅" --msgbox 'Installation completed' 9 60
-}
-
-#-------------------------------------------------------------------
-# Check if a package is installed
-#-------------------------------------------------------------------
-# @arg $1 Package name
-#
-# @example
-#   check_package curl
-#-------------------------------------------------------------------
-check_package() {
-  if ! dpkg --get-selections | grep -wq "$1"; then
-    echo false
-  else
-    echo true
-  fi
-}
-
-#-------------------------------------------------------------------
-# Check if file exists
-#-------------------------------------------------------------------
-# @arg $1 File path
-#
-# @example
-#   check_file "${HOME}/path/to/file.txt"
-#-------------------------------------------------------------------
-check_file() {
-  if [ ! -f "$1" ]; then
-    echo false
-  else
-    echo true
-  fi
-}
-
-#-------------------------------------------------------------------
-# Check if directory exists
-#-------------------------------------------------------------------
-# @arg $1 Directory path
-#
-# @example
-#   check_directory "${HOME}/path/to/directory"
-#-------------------------------------------------------------------
-check_directory() {
-  if [ ! -d "$1" ]; then
-    echo false
-  else
-    echo true
-  fi
-}
-
-#-------------------------------------------------------------------
-# Check if command exists
-#-------------------------------------------------------------------
-# @arg $1 Name of command
-#
-# @example
-#   check_command anki
-#-------------------------------------------------------------------
-check_command() {
-  if ! command -v "$1" > /dev/null; then
-    echo false
-  else
-    echo true
-  fi
 }
 
 #-------------------------------------------------------------------
