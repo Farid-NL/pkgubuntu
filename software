@@ -14,13 +14,10 @@ init_dir="${PWD}"
 source "${script_dir}/include/functions.sh"
 source "${script_dir}/include/software.sh"
 
-final_msj="Check possible errors in '${error}'
+final_msg="Check possible errors in '${error}'
 
   • Check how to install 'zsh'
     https://bit.ly/3Tz6zLO
-
-  • Look for desktop files & KDE settings
-    https://github.com/Farid-NL/dotfiles
 
   • You could need the thunderbird-menu-fix
     libdbusmenu-glib4 (Install)
@@ -53,10 +50,10 @@ check_software
 
 # Display software's statuses
 if ! pre_installation; then
-  final_message "${final_msj}"
+  final_message "${final_msg}"
   exit
 fi
 
 installation
 
-final_message "${final_msj}"
+final_message "${final_msg}"
