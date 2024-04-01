@@ -9,13 +9,15 @@ install_anki(){
 
   __log_separator__ 'Anki'
 
-  anki_url="https://api.github.com/repos/ankitects/anki/releases/latest"
+  local anki_url="https://api.github.com/repos/ankitects/anki/releases/latest"
 
+  local json
   local final_url
   local file_name
 
-  final_url=$(curl -s "${anki_url}" | jq -r '.assets[2].browser_download_url')
-  file_name=$(curl -s "${anki_url}" | jq -r '.assets[2].name')
+  json=$(curl -s "${anki_url}")
+  final_url=$(jq -r '.assets[2].browser_download_url' <<< "${json}")
+  file_name=$(jq -r '.assets[2].name' <<< "${json}")
 
   # Download
   # shellcheck disable=SC2154
