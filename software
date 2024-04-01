@@ -12,6 +12,7 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 init_dir="${PWD}"
 
 source "${script_dir}/include/functions.sh"
+source "${script_dir}/include/custom.sh"
 source "${script_dir}/include/software.sh"
 
 final_msg="Check possible errors in '${error}'

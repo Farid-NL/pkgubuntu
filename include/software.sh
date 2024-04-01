@@ -89,6 +89,9 @@ installation() {
 
   # OBS Studio
   install_PPA "obs-studio" "OBS Studio" "ppa:obsproject/obs-studio" "${is_installed[obs-studio]}"
+
+  # Anki
+  install_anki "${is_installed[anki]}"
 }
 
 #-------------------------------------------------------------------

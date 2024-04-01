@@ -28,7 +28,7 @@ __cleanup__() {
   tput cnorm
   rm -f /tmp/package.deb
   # shellcheck disable=SC2154
-  cd "${init_dir}" || return
+  cd "${init_dir}" 2>> "${error}" || return
 }
 
 #-------------------------------------------------------------------
