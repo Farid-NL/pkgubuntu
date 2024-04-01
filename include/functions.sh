@@ -25,10 +25,11 @@ __error_handler__() {
 # Reset everything as it was before runnig the script
 #-------------------------------------------------------------------
 __cleanup__() {
-  tput cnorm
-  rm -f /tmp/package.deb
   # shellcheck disable=SC2154
   cd "${init_dir}" 2>> "${error}" || return
+  tput cnorm
+  rm -f /tmp/package.deb
+  sudo -k # remove previous sudo timestamp
 }
 
 #-------------------------------------------------------------------

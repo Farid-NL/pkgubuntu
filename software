@@ -30,14 +30,25 @@ final_msg="Check possible errors in '${error}'
 # Execution
 #-------------------------------------------------------------------
 
-# Check if it's run as root
-if [[ "${EUID}" = 0 ]]; then
-  echo "It is not recommended (nor necessary) to run this script as root."
-  exit 1
-fi
+# Check root password has been entered
+if ! sudo -n true 2> /dev/null; then
 
-# Write the root password once
-sudo echo ""
+  # Ask for root password
+  while true; do
+    # If propmt is canceled, exit
+    if ! password=$(whiptail --passwordbox "Type your sudo password" --title "sudo password" \
+      8 60 3>&1 1>&2 2>&3)
+    then
+      whiptail --title "🔒 Goodbye! 🔒" --msgbox 'sudo password no provided' 7 60
+      exit 1
+    fi
+
+    # If password is correct, stop asking
+    if sudo -S true 2> /dev/null <<< "${password}"; then
+      break
+    fi
+  done
+fi
 
 # New date for log
 if [ ! -f "${error}" ]; then
